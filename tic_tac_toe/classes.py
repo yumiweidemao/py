@@ -17,10 +17,8 @@ class Chess(pygame.sprite.Sprite):
             pygame.draw.circle(self.image, color=(250, 250, 250),
                             center=(35, 35), radius=28, width=8)
         elif self.type == "X":
-            pygame.draw.line(self.image, color=(15, 15, 15), start_pos=(13, 10), 
-                            end_pos=(57, 60), width=11)
-            pygame.draw.line(self.image, color=(15, 15, 15), start_pos=(57, 10),
-                            end_pos=(13, 60), width=11)
+            pygame.draw.line(self.image, (15, 15, 15), (13, 10), (57, 60), 11)
+            pygame.draw.line(self.image, (15, 15, 15), (57, 10), (13, 60), 11)
     
     def update_board(self, surface, mouse_pos, board):
         """
@@ -115,10 +113,20 @@ class AI():
         """
 
         # AI algorithm
-        while 1:
-            x, y = random.choice((0, 1, 2)), random.choice((0, 1, 2))
-            if board[y][x] == 0:
-                break
+        is_full = True
+        possible_moves = []
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    is_full = False
+                    possible_moves.append((i, j))
+        
+        # board full, make no move
+        if is_full:
+            return board
+        
+        # otherwise, randomly choose a move
+        y, x = random.choice(possible_moves)
         
         # calculate mouse position
         mouse_x = 220 + 80 * x

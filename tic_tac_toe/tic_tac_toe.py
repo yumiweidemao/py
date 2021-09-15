@@ -88,6 +88,12 @@ def main():
                         # switch turn if a valid move is made
                         if valid:
                             now_playing = "X" if now_playing == "O" else "O"
+
+                            # check if winning condition is met
+                            winner = check_end(board)
+                            if winner is not None:
+                                announce(winner, background)
+                                game_active = 0
             elif event.type == MOUSEMOTION:
                 mouse_pos = event.pos
                 # check if mouse is on any button, update button color
@@ -97,7 +103,7 @@ def main():
         announce_mode(mode, background)
 
         # AI plays as "O"
-        if mode == "AI" and now_playing == AI_Opponent.type:
+        if mode == "AI" and now_playing == AI_Opponent.type and game_active == 1:
             # update screen
             screen.blit(background, (0, 0))
             pygame.display.flip()
@@ -107,7 +113,6 @@ def main():
 
             # AI plays
             board = AI_Opponent.play(background, board)
-            print(board)
             now_playing = "X" if now_playing == "O" else "O"
 
         #check if game has ended
