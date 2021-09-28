@@ -1,2 +1,2 @@
-# python fun
+# py
 Fun tiny programs written in Python.
