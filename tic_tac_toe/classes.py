@@ -106,7 +106,6 @@ class AI():
     def __init__(self, type):
         self.type = type
         self.opponent = "X" if self.type == "O" else "X"
-        self.first = 1
     
     def play(self, background, board):
         """ 
