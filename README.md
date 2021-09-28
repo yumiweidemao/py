@@ -1,2 +1,2 @@
-# python_projects
-A repository of my projects written in Python.
+# python fun
+Fun tiny programs written in Python.
