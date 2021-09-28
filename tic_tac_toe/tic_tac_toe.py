@@ -1,6 +1,7 @@
 import pygame
+import random
 from pygame.locals import *
-from classes import Chess, AI
+from classes import Chess, AI, check_end
 
 #initialize game variables
 game_active = 0
@@ -60,9 +61,6 @@ def main():
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
-    #initialize AI
-    AI_Opponent = AI()
-
     #main loop
     while 1:
         for event in pygame.event.get():
@@ -76,11 +74,15 @@ def main():
                         # button pressed, change mode
                         mode = select_mode(event.pos)
 
+                        # if mode is AI, initialize AI
+                        AI_Opponent = AI(random.choice(["X", "O"]))
+
                         # reset screen and board, then start a new game
                         board = [[0 for _ in range(3)] for _ in range(3)]
                         background = reset_background()
                         game_active = 1
                         now_playing = "X"
+                        continue
                     # chess can be put on board only when game is active
                     if game_active == 1:
                         chess = Chess(now_playing)
@@ -158,53 +160,6 @@ def select_mode(mouse_pos):
     if 25 <= mouse_x <= 120 and 130 <= mouse_y <= 170:
         return "AI"
     
-    return None
-
-def check_end(board):
-    """ check if the game ending conditions have been met """
-    for i in range(3):
-        # check row by row
-        first = board[i][0]
-        for j in range(1, 3):
-            if board[i][j] != first or board[i][j] == 0:
-                break
-            if j == 2:
-                return board[i][j]
-    
-        # check column by column
-        first = board[0][i]
-        for j in range(1, 3):
-            if board[j][i] != first or board[j][i] == 0:
-                break
-            if j == 2:
-                return board[j][i]
-    
-    # check diagonally
-    first = board[0][0]
-    for i in range(1, 3):
-        if board[i][i] != first or board[i][i] == 0:
-            break
-        if i == 2:
-            return board[i][i]
-    
-    first = board[0][2]
-    for i in range(1, 3):
-        if board[i][2-i] != first or board[i][2-i] == 0:
-            break
-        if i == 2:
-            return board[i][2-i]
-
-    # check if the board is full
-    is_full = True
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == 0:
-                is_full = False
-
-    # tie if board is full and there is no winner
-    if is_full:
-        return "TIE"
-
     return None
 
 def announce(winner, background):

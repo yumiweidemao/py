@@ -103,8 +103,10 @@ class Chess(pygame.sprite.Sprite):
         return board, valid
 
 class AI():
-    def __init__(self):
-        self.type = "O"
+    def __init__(self, type):
+        self.type = type
+        self.opponent = "X" if self.type == "O" else "X"
+        self.first = 1
     
     def play(self, background, board):
         """ 
@@ -112,21 +114,20 @@ class AI():
             updates the screen as well.
         """
 
-        # AI algorithm
-        is_full = True
-        possible_moves = []
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == 0:
-                    is_full = False
-                    possible_moves.append((i, j))
+        # check game ending conditions at each spot, block opponent from winning / make the winning move
+        if self.necessary_position(board) is not None:
+            y, x = self.necessary_position(board)
         
-        # board full, make no move
-        if is_full:
-            return board
-        
-        # otherwise, randomly choose a move
-        y, x = random.choice(possible_moves)
+        # else, make a random move
+        else:
+            possible_moves = []
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == 0:
+                        possible_moves.append((i, j))
+
+            # randomly choose an empty location
+            y, x = random.choice(possible_moves)
         
         # calculate mouse position
         mouse_x = 220 + 80 * x
@@ -138,3 +139,79 @@ class AI():
         board, _ = chess.update_board(background, mouse_pos, board)
 
         return board
+
+    def necessary_position(self, board):
+        """
+            determine if there is a position where AI can block the opponent from winning or win. return the position (y, x). (board[y][x] is the position)
+        """
+
+        # check each empty position
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    # check AI win
+                    board[i][j] = self.type
+                    if check_end(board) == self.type:
+                        # AI winning, make move at the position
+                        board[i][j] = 0
+                        return (i, j)
+
+                    # check player win
+                    board[i][j] = self.opponent
+                    if check_end(board) == self.opponent:
+                        # player winning, block the position
+                        board[i][j] = 0
+                        return (i, j)
+                    
+                    # clear position
+                    board[i][j] = 0
+        return None
+
+""" Game functions """
+
+def check_end(board):
+    """ check if the game ending conditions have been met """
+    for i in range(3):
+        # check row by row
+        first = board[i][0]
+        for j in range(1, 3):
+            if board[i][j] != first or board[i][j] == 0:
+                break
+            if j == 2:
+                return board[i][j]
+    
+        # check column by column
+        first = board[0][i]
+        for j in range(1, 3):
+            if board[j][i] != first or board[j][i] == 0:
+                break
+            if j == 2:
+                return board[j][i]
+    
+    # check diagonally
+    first = board[0][0]
+    for i in range(1, 3):
+        if board[i][i] != first or board[i][i] == 0:
+            break
+        if i == 2:
+            return board[i][i]
+    
+    first = board[0][2]
+    for i in range(1, 3):
+        if board[i][2-i] != first or board[i][2-i] == 0:
+            break
+        if i == 2:
+            return board[i][2-i]
+
+    # check if the board is full
+    is_full = True
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == 0:
+                is_full = False
+
+    # tie if board is full and there is no winner
+    if is_full:
+        return "TIE"
+
+    return None
