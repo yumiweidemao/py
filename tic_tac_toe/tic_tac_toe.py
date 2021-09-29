@@ -75,7 +75,8 @@ def main():
                         mode = select_mode(event.pos)
 
                         # if mode is AI, initialize AI
-                        AI_Opponent = AI(random.choice(["X", "O"]))
+                        if mode == "AI":
+                            AI_Opponent = AI(random.choice(["X", "O"]))
 
                         # reset screen and board, then start a new game
                         board = [[0 for _ in range(3)] for _ in range(3)]
@@ -90,7 +91,6 @@ def main():
                         # switch turn if a valid move is made
                         if valid:
                             now_playing = "X" if now_playing == "O" else "O"
-
                             # check if winning condition is met
                             winner = check_end(board)
                             if winner is not None:

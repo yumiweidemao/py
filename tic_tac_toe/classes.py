@@ -105,7 +105,7 @@ class Chess(pygame.sprite.Sprite):
 class AI():
     def __init__(self, type):
         self.type = type
-        self.opponent = "X" if self.type == "O" else "X"
+        self.opponent = "X" if self.type == "O" else "O"
     
     def play(self, background, board):
         """ 
