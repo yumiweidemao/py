@@ -144,6 +144,9 @@ class AI():
             determine if there is a position where AI can block the opponent from winning or win. return the position (y, x). (board[y][x] is the position)
         """
 
+        # if player is winning, set this variable to 1
+        player_winning = 0
+        
         # check each empty position
         for i in range(3):
             for j in range(3):
@@ -158,12 +161,19 @@ class AI():
                     # check player win
                     board[i][j] = self.opponent
                     if check_end(board) == self.opponent:
-                        # player winning, block the position
+                        # player winning, wait and see if AI can win
                         board[i][j] = 0
-                        return (i, j)
+                        y, x = i, j
+                        player_winning = 1
                     
                     # clear position
                     board[i][j] = 0
+                    
+        # if player is winning and AI cannot win, block player
+        if player_winning:
+            return (y, x)
+        
+        # No player is winning, return nothing
         return None
 
 """ Game functions """
