@@ -52,7 +52,7 @@ def quick_sort(A, p, r) -> None:
         @retval  None
     """
     # only execute if array has more than 1 element
-    if p < r + 1:
+    if p < r:
         q = partition(A, p, r)
         quick_sort(A, p, q-1)
         quick_sort(A, q+1, r)
