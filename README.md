@@ -1,2 +1,2 @@
 # py
-Fun tiny programs written in Python.
+My programs written in Python.
