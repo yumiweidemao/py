@@ -179,7 +179,50 @@ class RBTree:
         v.p = u.p
 
     def delete_fixup(self, x):
-        pass
+        while x != self.root and x.color == BLACK:
+            if x == x.p.left:
+                w = x.p.right
+                if w.color == RED:
+                    w.color = BLACK
+                    x.p.color = RED
+                    self.left_rotate(x.p)
+                    w = x.p.right
+                if w.left.color == BLACK and w.right.color == BLACK:
+                    w.color = RED
+                    x = x.p
+                else:
+                    if w.right.color == BLACK:
+                        w.left.color = BLACK
+                        w.color = RED
+                        self.right_rotate(w)
+                        w = x.p.right
+                    w.color = x.p.color
+                    x.p.color = BLACK
+                    w.right.color = BLACK
+                    self.left_rotate(x.p)
+                    x = self.root
+            else:
+                w = x.p.left
+                if w.color == RED:
+                    w.color = BLACK
+                    x.p.color = RED
+                    self.right_rotate(x.p)
+                    w = x.p.left
+                if w.right.color == BLACK and w.left.color == BLACK:
+                    w.color = RED
+                    x = x.p
+                else:
+                    if w.left.color == BLACK:
+                        w.right.color = BLACK
+                        w.color = RED
+                        self.left_rotate(w)
+                        w = x.p.left
+                    w.color = x.p.color
+                    x.p.color = BLACK
+                    w.left.color = BLACK
+                    self.right_rotate(x.p)
+                    x = self.root
+        x.color = BLACK
 
 
 def print_tree(root):
@@ -203,6 +246,11 @@ def main():
     tree.insert(11)
     tree.insert(14)
     tree.insert(15)
+    print_tree(tree.root)
+    print("\nNow deleting 7, 11 and 2...\n")
+    tree.delete(7)
+    tree.delete(11)
+    tree.delete(2)
     print_tree(tree.root)
 
 
