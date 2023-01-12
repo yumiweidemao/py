@@ -224,15 +224,19 @@ class RBTree:
                     x = self.root
         x.color = BLACK
 
+    def __repr__(self):
+        lines = []
+        print_tree(self.root, lines)
+        return '\n'.join(lines)
 
-def print_tree(root):
+
+def print_tree(root, lines, level=0):
     """ visualize a red-black tree """
-    if root == NIL:
-        return
-    print("current node:", root.key, "\tcolor:", "BLACK" if root.color == 1 else "RED  "
-          , "\tp:", root.p.key, "\tleft:", root.left.key, "\tright:", root.right.key)
-    print_tree(root.left)
-    print_tree(root.right)
+    if root.key is not None:
+        print_tree(root.right, lines, level+1)
+        lines.append(' ' * 4 * level + ' ' + ('\033[91m' if root.color == RED else '\033[1m') +
+                     str(root.key) + '\033[0m')
+        print_tree(root.left, lines, level+1)
 
 
 def main():
@@ -246,12 +250,12 @@ def main():
     tree.insert(11)
     tree.insert(14)
     tree.insert(15)
-    print_tree(tree.root)
+    print(tree)
     print("\nNow deleting 7, 11 and 2...\n")
     tree.delete(7)
     tree.delete(11)
     tree.delete(2)
-    print_tree(tree.root)
+    print(tree)
 
 
 if __name__ == '__main__':
