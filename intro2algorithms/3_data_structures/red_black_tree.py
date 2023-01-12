@@ -28,13 +28,33 @@ class TreeNode:
 NIL = TreeNode(color=BLACK)  # sentinel at the top and bottom of the tree
 
 
+def tree_minimum(x):
+    """ find minimum node (leftmost) rooted at x. """
+    while x.left != NIL:
+        x = x.left
+    return x
+
+
 class RBTree:
     def __init__(self):
         self.root = NIL
 
+    def search(self, key):
+        """ return the TreeNode object with key=key in the red-black tree. """
+        x = self.root
+        while x != NIL:
+            if x.key == key:
+                return x
+            elif x.key < key:
+                x = x.right
+            else:
+                x = x.left
+        return None
+
     def insert(self, key):
-        z = TreeNode(color=RED, key=key)    # z is the node to be inserted, color must be RED
-        y = NIL                             # y is the parent of z
+        """ insert a new node with key=key to the red-black tree. """
+        z = TreeNode(color=RED, key=key)  # z is the node to be inserted, color must be RED
+        y = NIL  # y is the parent of z
         x = self.root
         while x != NIL:
             y = x
@@ -58,66 +78,108 @@ class RBTree:
             # not the root
             if z.p == z.p.p.left:
                 y = z.p.p.right
-                if y.color == RED:              # case 1
+                if y.color == RED:  # case 1
                     z.p.color = BLACK
                     y.color = BLACK
                     z.p.p.color = RED
                     z = z.p.p
                 else:
-                    if z == z.p.right:          # case 2
+                    if z == z.p.right:  # case 2
                         z = z.p
                         self.left_rotate(z)
-                    z.p.color = BLACK           # case 3
+                    z.p.color = BLACK  # case 3
                     z.p.p.color = RED
                     self.right_rotate(z.p.p)
             else:
                 y = z.p.p.left
-                if y.color == RED:              # case 1
+                if y.color == RED:  # case 1
                     z.p.color = BLACK
                     y.color = BLACK
                     z.p.p.color = RED
                     z = z.p.p
                 else:
-                    if z == z.p.left:           # case 2
+                    if z == z.p.left:  # case 2
                         z = z.p
                         self.right_rotate(z)
-                    z.p.color = BLACK           # case 3
+                    z.p.color = BLACK  # case 3
                     z.p.p.color = RED
                     self.left_rotate(z.p.p)
 
         self.root.color = BLACK
 
+    def delete(self, key):
+        z = self.search(key)  # this takes O(log(n)) time
+        y = z
+        y_original_color = y.color
+        if z.left == NIL:
+            x = z.right
+            self.transplant(z, z.right)
+        elif z.right == NIL:
+            x = z.left
+            self.transplant(z, z.left)
+        else:
+            y = tree_minimum(z.right)
+            y_original_color = y.color
+            x = y.right
+            if y.p == z:
+                x.p = y
+            else:
+                self.transplant(y, y.right)
+                y.right = z.right
+                y.right.p = y
+            self.transplant(z, y)
+            y.left = z.left
+            y.left.p = y
+            y.color = z.color
+        if y_original_color == BLACK:
+            self.delete_fixup(x)
+
+    """ helper functions """
+
     def left_rotate(self, x):
         """ do a left rotation at node x """
-        y = x.right                 # set y
-        x.right = y.left            # turn y's subtree into x's right subtree
+        y = x.right  # set y
+        x.right = y.left  # turn y's subtree into x's right subtree
         if y.left != NIL:
             y.left.p = x
-        y.p = x.p                   # link x's parent to y
+        y.p = x.p  # link x's parent to y
         if x.p == NIL:
             self.root = y
         elif x == x.p.left:
             x.p.left = y
         else:
             x.p.right = y
-        y.left = x                  # put x on y's left
+        y.left = x  # put x on y's left
         x.p = y
 
     def right_rotate(self, x):
         """ do a right rotation at node x """
-        y = x.left                  # set y
-        x.left = y.right            # turn y's subtree into x's left subtree
+        y = x.left  # set y
+        x.left = y.right  # turn y's subtree into x's left subtree
         if y.right != NIL:
             y.right.p = x
-        y.p = x.p                   # link x's parent to y
+        y.p = x.p  # link x's parent to y
         if x.p == NIL:
             self.root = y
         elif x == x.p.left:
             x.p.left = y
         else:
             x.p.right = y
-        y.right = x                 # put x on y's right
+        y.right = x  # put x on y's right
         x.p = y
+
+    def transplant(self, u, v):
+        """ replace node u with node v """
+        if u.p == NIL:
+            self.root = v
+        elif u == u.p.left:
+            u.p.left = v
+        else:
+            u.p.right = v
+        v.p = u.p
+
+    def delete_fixup(self, x):
+        pass
 
 
 def print_tree(root):
